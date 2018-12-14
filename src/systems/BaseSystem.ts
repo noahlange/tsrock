@@ -1,7 +1,7 @@
-import { bind } from '../decorators';
+import { bind, EVENT_BRAND } from '../decorators';
 import Entity from '../Entity';
 import { IComponentMap, IEventMap } from '../maps';
-import { ComponentMapKey, EVENT_BRAND, EventMapKey, IEntityComponentSystem } from '../types';
+import { ComponentMapKey, EventMapKey, IEntityComponentSystem } from '../types';
 import { getInstanceMethodNames, isEventHandler } from '../utils';
 
 class BaseSystem<S extends IEntityComponentSystem> {
