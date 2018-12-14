@@ -21,8 +21,9 @@ function decorate<E extends EventMapKey>(event: E) {
 }
 
 export function bind(target: any, key: string) {
+  const fn = target[key];
   target[key] = function(...args: any[]) {
-    return this[key].apply(this, args);
+    return fn.apply(this, args);
   };
   return target;
 }
