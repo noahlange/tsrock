@@ -4,7 +4,6 @@ tslint:disable: member-ordering
 */
 
 import Entity, { EntityType } from '../Entity';
-import { IEntityMap } from '../maps';
 
 import Blocks from '../reference/blocks';
 import Events from '../reference/events';
@@ -103,7 +102,7 @@ class ServerSystem {
   }
 
   @bind
-  private entityFrom<K extends EntityMapKey>(object: IEntityObject): IEntityMap[K] {
+  private entityFrom(object: IEntityObject): Entity {
     return Entity.from(this.system, object);
   }
 

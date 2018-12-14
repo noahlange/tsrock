@@ -1,5 +1,5 @@
 // tslint:disable: max-classes-per-file
-import { IComponentMap, IEntityMap, IEventMap } from './maps';
+import { IComponentMap, IEntityMap, IEventMap, IItemMap } from './maps';
 
 export interface IEntityComponentSystem extends ISystem<any> {
   createComponent<T>(entity: IEntityObject, componentName: string): T;
@@ -13,7 +13,7 @@ export interface IEntityComponentSystem extends ISystem<any> {
 
 export type EventMapKey = keyof IEventMap & string;
 export type ComponentMapKey = keyof IComponentMap & string;
-export type EntityMapKey = keyof IEntityMap & string;
+export type EntityMapKey = keyof (IEntityMap & IItemMap) & string;
 
 export type Handler = (...args: any[]) => any;
 
