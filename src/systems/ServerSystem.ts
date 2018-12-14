@@ -1,15 +1,21 @@
+/*
+tslint:disable: member-ordering
+  - ordered dependency issue - public members need access to private members
+*/
+
 import Entity, { EntityType } from '../Entity';
-import Items from '../items';
-import { EntityMapKey, IEntityMap } from '../types';
+import { IEntityMap } from '../maps';
+
+import Blocks from '../reference/blocks';
+import Events from '../reference/events';
+import Items from '../reference/items';
+
+import { bind } from '../decorators';
+import { EntityMapKey } from '../types';
 import { keys } from '../utils';
 import BaseSystem from './BaseSystem';
 
-/*
-tslint:disable: member-ordering
-  - ordered dependency issue - public members need access to private members.
-*/
-
-abstract class ServerSystem {
+class ServerSystem {
   private system: IVanillaServerSystem = server.registerSystem(0, 0);
   private base: BaseSystem<IVanillaServerSystem> = new BaseSystem(this.system);
 
@@ -34,16 +40,13 @@ abstract class ServerSystem {
      * can't have arrow property functions with overloads. we're casting
      * because TypeScript only uses the first overload for bound functions
      */
-    this.entities.create = this.entityCreate.bind(this) as any;
-    this.entities.from = this.entityFrom.bind(this) as any;
-
     if (this.update) {
       this.system.update = this.update.bind(this);
     }
     if (this.shutdown) {
       this.system.shutdown = this.shutdown.bind(this);
     }
-    this.system.initialize = this._initialize.bind(this);
+    this.system.initialize = this._initialize;
   }
 
   public initialize?(): void;
@@ -52,11 +55,16 @@ abstract class ServerSystem {
 
   private entityCreate(entities: Partial<Record<EntityMapKey, number>>): Entity[];
   private entityCreate(entity: EntityMapKey): Entity;
+  @bind
   private entityCreate(
     id: Partial<Record<EntityMapKey, number>> | EntityMapKey
   ): Entity | Entity[] {
     if (typeof id === 'string') {
       const isItem = Object.keys(Items).includes(id);
+      const isBlock = Object.keys(Blocks).includes(id);
+      if (isBlock) {
+        throw new Error('Cannot instantiate entity of type "block"');
+      }
       const e = this.system.createEntity(
         isItem ? EntityType.ItemEntity : EntityType.Entity,
         id
@@ -72,8 +80,8 @@ abstract class ServerSystem {
           const isItem = Object.keys(Items).includes(key);
           const type = isItem ? EntityType.ItemEntity : EntityType.Entity;
           const entities = Array(id[key])
-            .fill(0)
-            .map(i => {
+            .fill(null)
+            .map(() => {
               const e = this.system.createEntity(type, key);
               if (e) {
                 return Entity.from(this.system, e);
@@ -90,10 +98,16 @@ abstract class ServerSystem {
     }
   }
 
+  public log(message: string) {
+    this.base.eventBroadcast(Events.DISPLAY_CHAT_EVENT, message);
+  }
+
+  @bind
   private entityFrom<K extends EntityMapKey>(object: IEntityObject): IEntityMap[K] {
     return Entity.from(this.system, object);
   }
 
+  @bind
   private _initialize() {
     this.base.bindEvents(this);
     if (this.initialize) {

@@ -1,4 +1,6 @@
-import { ComponentMapKey, IComponentMap, IEntityComponentSystem } from './types';
+import { bind } from './decorators';
+import { IComponentMap } from './maps';
+import { ComponentMapKey, IEntityComponentSystem } from './types';
 import { keys } from './utils';
 
 export enum EntityType {
@@ -37,18 +39,6 @@ export default class Entity {
   private constructor(system: IEntityComponentSystem, e: IEntityObject) {
     this.system = system;
     this.entity = e;
-
-    this.component.add = this.addComponent.bind(this) as any;
-    this.component.get = this.getComponent.bind(this) as any;
-    this.component.has = this.hasComponent.bind(this) as any;
-    this.component.remove = this.removeComponent.bind(this) as any;
-    this.component.update = this.updateComponent.bind(this) as any;
-
-    this.components.add = this.addComponents.bind(this) as any;
-    this.components.get = this.getComponents.bind(this) as any;
-    this.components.has = this.hasComponents.bind(this) as any;
-    this.components.remove = this.removeComponents.bind(this) as any;
-    this.components.update = this.updateComponents.bind(this) as any;
   }
 
   public get id() {
@@ -67,9 +57,10 @@ export default class Entity {
     return this.system.isValidEntity(this.entity) || false;
   }
 
+  @bind
   private addComponent<K extends ComponentMapKey>(key: K, initial?: Partial<IComponentMap[K]>) {
     const cmp = this.system.createComponent<IComponentMap[K]>(this.entity, key);
-    // @ts-ignore typings for apply are wrong.
+    // @ts-ignore typings for applyComponentChanges are incorrect.
     // tslint:disable-next-line
     this.system.applyComponentChanges(this.entity, Object.assign(cmp, initial));
     if (!cmp) {
@@ -77,6 +68,7 @@ export default class Entity {
     }
   }
 
+  @bind
   private addComponents<K extends ComponentMapKey>(
     components: { [P in K]: Partial<IComponentMap[P]> }
   ): void {
@@ -85,6 +77,7 @@ export default class Entity {
     }
   }
 
+  @bind
   private getComponent<K extends ComponentMapKey>(component: K): IComponentMap[K] {
     const res = this.system.getComponent(this.entity, component);
     if (res) {
@@ -99,18 +92,22 @@ export default class Entity {
   }
 
   // @todo figure out how to type this
+  @bind
   private getComponents<K extends ComponentMapKey>(...components: K[]): IComponentMap[K] {
     return components.map(c => this.getComponent(c));
   }
 
+  @bind
   private hasComponent<K extends ComponentMapKey>(component: K): boolean {
     return this.system.hasComponent(this.entity, component);
   }
 
+  @bind
   private hasComponents<K extends ComponentMapKey>(...components: K[]): boolean {
     return components.every(c => this.hasComponent(c));
   }
 
+  @bind
   private updateComponents<K extends ComponentMapKey>(
     components: { [P in K]: Changes<P> }
   ): void {
@@ -119,23 +116,23 @@ export default class Entity {
     }
   }
 
+  @bind
   private updateComponent<K extends ComponentMapKey>(component: K, changes: Changes<K>): void {
     const cmp = this.system.getComponent<IComponentMap[K]>(this.entity, component);
     if (typeof changes === 'function') {
       changes = (changes as any)(cmp);
     }
     // @ts-ignore type definition error
-    this.system.applyComponentChanges(
-      this.entity,
-      // tslint:disable-next-line
-      Object.assign(cmp, changes)
-    );
+    // tslint:disable-next-line
+    this.system.applyComponentChanges(this.entity, Object.assign(cmp, changes));
   }
 
+  @bind
   private removeComponent<K extends ComponentMapKey>(component: K): void {
     this.system.destroyComponent(this.entity, component);
   }
 
+  @bind
   private removeComponents<K extends ComponentMapKey>(...components: K[]): void {
     components.forEach(c => this.removeComponent(c));
   }

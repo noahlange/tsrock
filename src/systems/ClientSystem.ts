@@ -1,11 +1,13 @@
-import BaseSystem from './BaseSystem';
-
 /*
 tslint:disable: member-ordering
   - ordered dependency issue - public members need access to private members.
 */
 
-abstract class ClientSystem {
+import { bind } from '../decorators';
+import Events from '../reference/events';
+import BaseSystem from './BaseSystem';
+
+class ClientSystem {
   private system: IVanillaServerSystem = client.registerSystem(0, 0);
   private base: BaseSystem<IVanillaClientSystem> = new BaseSystem(this.system);
 
@@ -30,13 +32,18 @@ abstract class ClientSystem {
     if (this.shutdown) {
       this.system.shutdown = this.shutdown.bind(this);
     }
-    this.system.initialize = this._initialize.bind(this);
+    this.system.initialize = this._initialize;
+  }
+
+  public log(message: string) {
+    this.base.eventBroadcast(Events.DISPLAY_CHAT_EVENT, message);
   }
 
   public initialize?(): void;
   public update?(): void;
   public shutdown?(): void;
 
+  @bind
   private _initialize() {
     this.base.bindEvents(this);
     if (this.initialize) {

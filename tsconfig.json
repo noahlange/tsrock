@@ -1,16 +1,22 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node",
+    "declarationDir": "dist/types",
     "target": "esnext",
     "module": "esnext",
-    "strict": true,
-    "experimentalDecorators": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
     "esModuleInterop": true,
-    "emitDeclarationOnly": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
     "declaration": true,
-    "declarationDir": "types"
+    "strict": true
   },
+  "exclude": ["dist"],
   "include": [
-    "src",
+    "src/**/*",
     "node_modules/minecraft-scripting-types-client",
     "node_modules/minecraft-scripting-types-server",
     "node_modules/minecraft-scripting-types-shared"

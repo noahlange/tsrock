@@ -1,28 +1,15 @@
 import BaseSystem from './systems/BaseSystem';
-import { EVENT_BRAND, IEventMap } from './types';
+import { EventMapKey, Handler, TypedMethod } from './types';
 
-type EMKey = keyof IEventMap & string;
-
-export type Handler = (...args: any[]) => any;
-export type TypedMethod<E extends EMKey> = IEventMap[E] extends never
-  ? () => void
-  : (data: IEventMap[E]) => void;
+export const EVENT_BRAND = '__event';
 
 function brand(object: any, value: string | boolean = true) {
   Object.defineProperty(object, EVENT_BRAND, { value });
   return object;
 }
 
-function wrapper(handler: Handler, event: string): Handler {
-  return brand(handler, event);
-}
-
-
-function decorate<E extends EMKey>(event: E) {
-  return <
-    T extends BaseSystem<any> & { [P in keyof T]: T[P] },
-    K extends keyof T
-  >(
+function decorate<E extends EventMapKey>(event: E) {
+  return <T extends BaseSystem<any> & { [P in keyof T]: T[P] }, K extends keyof T>(
     prototype: T,
     key: K,
     descriptor: TypedPropertyDescriptor<TypedMethod<E>>
@@ -33,22 +20,23 @@ function decorate<E extends EMKey>(event: E) {
   };
 }
 
-export function on<E extends EMKey>(event: E): MethodDecorator;
-export function on<E extends EMKey>(
-  event: E,
-  handler: Handler
-): Handler;
-export function on<E extends EMKey>(
+export function bind(target: any, key: string) {
+  target[key] = function(...args: any[]) {
+    return this[key].apply(this, args);
+  };
+  return target;
+}
+
+export function on<E extends EventMapKey>(event: E): MethodDecorator;
+export function on<E extends EventMapKey>(event: E, handler: Handler): Handler;
+export function on<E extends EventMapKey>(
   event: E,
   handler?: Handler
 ): Handler | MethodDecorator {
   if (typeof handler === 'function') {
-    return wrapper(handler, event);
+    return brand(handler, event);
   } else {
-    return <
-      T extends BaseSystem<any> & { [P in keyof T]: T[P] },
-      K extends keyof T
-    >(
+    return <T extends BaseSystem<any> & { [P in keyof T]: T[P] }, K extends keyof T>(
       target: T,
       key: K,
       descriptor: TypedPropertyDescriptor<TypedMethod<E>>
