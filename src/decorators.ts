@@ -20,12 +20,41 @@ function decorate<E extends EventMapKey>(event: E) {
   };
 }
 
-export function bind(target: any, key: string) {
-  const fn = target[key];
-  target[key] = function(...args: any[]) {
-    return fn.apply(this, args);
+/**
+ * https://github.com/andreypopp/autobind-decorator
+ * shamelessly torn from this library, released under the MIT license
+ */
+export function bind(target: any, key: string, descriptor: PropertyDescriptor) {
+  const { constructor } = target;
+  let { value: fn } = descriptor;
+  return {
+    configurable: true,
+    get() {
+      if (this === target) {
+        return fn;
+      }
+      if (
+        this.constructor !== constructor &&
+        Object.getPrototypeOf(this).constructor === constructor
+      ) {
+        return fn;
+      }
+      const bound = fn.bind(this);
+      Object.defineProperty(this, key, {
+        get() {
+          return bound;
+        },
+        set(value: any) {
+          fn = value;
+          delete this[key];
+        }
+      });
+      return bound;
+    },
+    set(value: Handler) {
+      fn = value;
+    }
   };
-  return target;
 }
 
 export function on<E extends EventMapKey>(event: E): MethodDecorator;

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "rollup -c --watch",
     "build": "rollup -c",
+    "lint": "tslint 'src/**/*.ts'",
     "types": "tsc --emitDeclarationOnly"
   },
   "main": "dist/tsrock.common.js",
