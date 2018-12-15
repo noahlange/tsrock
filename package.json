@@ -1,12 +1,12 @@
 {
   "name": "tsrock",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Noah Lange <noahrlange@gmail.com>",
   "license": "CC-BY-NC-SA-3.0",
   "scripts": {
     "start": "rollup -c --watch",
     "build": "rollup -c",
-    "lint": "tslint 'src/**/*.ts'",
+    "lint": "tslint -p tsconfig.json 'src/**/*.ts'",
     "types": "tsc --emitDeclarationOnly"
   },
   "main": "dist/tsrock.common.js",

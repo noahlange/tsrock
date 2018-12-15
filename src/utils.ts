@@ -1,5 +1,5 @@
+import { IEventMap } from './';
 import { EVENT_BRAND } from './decorators';
-import { IEventMap } from './maps';
 
 type EventHandler<K extends keyof IEventMap> = { [EVENT_BRAND]: keyof IEventMap } & ((
   ...data: Array<IEventMap[K]>

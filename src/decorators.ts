@@ -1,5 +1,6 @@
+import { IEventMap } from './';
 import BaseSystem from './systems/BaseSystem';
-import { EventMapKey, Handler, TypedMethod } from './types';
+import { Handler, TypedMethod } from './types';
 
 export const EVENT_BRAND = '__event';
 
@@ -8,7 +9,7 @@ function brand(object: any, value: string | boolean = true) {
   return object;
 }
 
-function decorate<E extends EventMapKey>(event: E) {
+function decorate<E extends keyof IEventMap>(event: E) {
   return <T extends BaseSystem<any> & { [P in keyof T]: T[P] }, K extends keyof T>(
     prototype: T,
     key: K,
@@ -57,10 +58,10 @@ export function bind(target: any, key: string, descriptor: PropertyDescriptor) {
   };
 }
 
-export function on<E extends EventMapKey>(event: E): MethodDecorator;
-export function on<E extends EventMapKey>(event: E, handler: Handler): Handler;
-export function on<E extends EventMapKey>(
-  event: E,
+export function on<E extends keyof IEventMap>(event: E): MethodDecorator;
+export function on<E extends keyof IEventMap>(event: E, handler: Handler): Handler;
+export function on<E extends keyof IEventMap>(
+  event: E & string,
   handler?: Handler
 ): Handler | MethodDecorator {
   if (typeof handler === 'function') {

@@ -1,7 +1,7 @@
+import { IComponentMap, IEventMap } from '../';
 import { bind, EVENT_BRAND } from '../decorators';
 import Entity from '../Entity';
-import { IComponentMap, IEventMap } from '../maps';
-import { ComponentMapKey, EventMapKey, IEntityComponentSystem } from '../types';
+import { IEntityComponentSystem } from '../types';
 import { getInstanceMethodNames, isEventHandler } from '../utils';
 
 class BaseSystem<S extends IEntityComponentSystem> {
@@ -21,19 +21,22 @@ class BaseSystem<S extends IEntityComponentSystem> {
   }
 
   @bind
-  public eventOn<K extends EventMapKey>(event: K, callback: (data: IEventMap[K]) => void) {
+  public eventOn<K extends keyof IEventMap>(event: K, callback: (data: IEventMap[K]) => void) {
     this.system.listenForEvent(event, callback);
   }
 
   @bind
-  public eventBroadcast<K extends EventMapKey>(event: K, ...data: Array<IEventMap[K]>) {
+  public eventBroadcast<K extends keyof IEventMap>(event: K, ...data: Array<IEventMap[K]>) {
     for (const item of data) {
       this.system.broadcastEvent(event, item);
     }
   }
 
   @bind
-  public registerComponent<K extends ComponentMapKey>(name: K, obj: IComponentMap[K]) {
+  public registerComponent<K extends keyof IComponentMap>(
+    name: K & string,
+    obj: IComponentMap[K]
+  ) {
     this.system.registerComponent(name, obj);
   }
 

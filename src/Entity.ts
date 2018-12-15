@@ -1,6 +1,6 @@
+import { IComponentMap } from './';
 import { bind } from './decorators';
-import { IComponentMap } from './maps';
-import { ComponentMapKey, IEntityComponentSystem } from './types';
+import { IEntityComponentSystem } from './types';
 import { keys } from './utils';
 
 export enum EntityType {
@@ -8,7 +8,7 @@ export enum EntityType {
   Entity = 'entity'
 }
 
-type Changes<K extends ComponentMapKey> =
+type Changes<K extends keyof IComponentMap> =
   | Partial<IComponentMap[K]>
   | ((prev: IComponentMap[K]) => Partial<IComponentMap[K]>);
 
@@ -58,7 +58,10 @@ export default class Entity {
   }
 
   @bind
-  private addComponent<K extends ComponentMapKey>(key: K, initial?: Partial<IComponentMap[K]>) {
+  private addComponent<K extends keyof IComponentMap>(
+    key: K & string,
+    initial?: Partial<IComponentMap[K]>
+  ) {
     const cmp = this.system.createComponent<IComponentMap[K]>(this.entity, key);
     // @ts-ignore typings for applyComponentChanges are incorrect.
     // tslint:disable-next-line
@@ -69,16 +72,18 @@ export default class Entity {
   }
 
   @bind
-  private addComponents<K extends ComponentMapKey>(
+  private addComponents<K extends keyof IComponentMap>(
     components: { [P in K]: Partial<IComponentMap[P]> }
   ): void {
     for (const id of keys(components)) {
-      this.addComponent(id, components[id]);
+      if (typeof id === 'string') {
+        this.addComponent(id, components[id]);
+      }
     }
   }
 
   @bind
-  private getComponent<K extends ComponentMapKey>(component: K): IComponentMap[K] {
+  private getComponent<K extends keyof IComponentMap>(component: K & string): IComponentMap[K] {
     const res = this.system.getComponent(this.entity, component);
     if (res) {
       return res as IComponentMap[K];
@@ -93,31 +98,40 @@ export default class Entity {
 
   // @todo figure out how to type this
   @bind
-  private getComponents<K extends ComponentMapKey>(...components: K[]): IComponentMap[K] {
+  private getComponents<K extends keyof IComponentMap>(
+    ...components: Array<K & string>
+  ): IComponentMap[K] {
     return components.map(c => this.getComponent(c));
   }
 
   @bind
-  private hasComponent<K extends ComponentMapKey>(component: K): boolean {
+  private hasComponent<K extends keyof IComponentMap>(component: K & string): boolean {
     return this.system.hasComponent(this.entity, component);
   }
 
   @bind
-  private hasComponents<K extends ComponentMapKey>(...components: K[]): boolean {
+  private hasComponents<K extends keyof IComponentMap>(
+    ...components: Array<K & string>
+  ): boolean {
     return components.every(c => this.hasComponent(c));
   }
 
   @bind
-  private updateComponents<K extends ComponentMapKey>(
+  private updateComponents<K extends keyof IComponentMap>(
     components: { [P in K]: Changes<P> }
   ): void {
     for (const id of keys(components)) {
-      this.updateComponent(id, components[id]);
+      if (typeof id === 'string') {
+        this.updateComponent(id, components[id]);
+      }
     }
   }
 
   @bind
-  private updateComponent<K extends ComponentMapKey>(component: K, changes: Changes<K>): void {
+  private updateComponent<K extends keyof IComponentMap>(
+    component: K & string,
+    changes: Changes<K>
+  ): void {
     const cmp = this.system.getComponent<IComponentMap[K]>(this.entity, component);
     if (typeof changes === 'function') {
       changes = (changes as any)(cmp);
@@ -128,12 +142,14 @@ export default class Entity {
   }
 
   @bind
-  private removeComponent<K extends ComponentMapKey>(component: K): void {
+  private removeComponent<K extends keyof IComponentMap>(component: K & string): void {
     this.system.destroyComponent(this.entity, component);
   }
 
   @bind
-  private removeComponents<K extends ComponentMapKey>(...components: K[]): void {
+  private removeComponents<K extends keyof IComponentMap>(
+    ...components: Array<K & string>
+  ): void {
     components.forEach(c => this.removeComponent(c));
   }
 }

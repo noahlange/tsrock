@@ -9,8 +9,8 @@ import Blocks from '../reference/blocks';
 import Events from '../reference/events';
 import Items from '../reference/items';
 
+import { IEntityMap, IItemMap } from '../';
 import { bind } from '../decorators';
-import { EntityMapKey } from '../types';
 import { keys } from '../utils';
 import BaseSystem from './BaseSystem';
 
@@ -52,11 +52,13 @@ class ServerSystem {
   public update?(): void;
   public shutdown?(): void;
 
-  private entityCreate(entities: Partial<Record<EntityMapKey, number>>): Entity[];
-  private entityCreate(entity: EntityMapKey): Entity;
+  private entityCreate(
+    entities: Partial<Record<keyof (IEntityMap & IItemMap), number>>
+  ): Entity[];
+  private entityCreate(entity: keyof (IEntityMap & IItemMap)): Entity;
   @bind
   private entityCreate(
-    id: Partial<Record<EntityMapKey, number>> | EntityMapKey
+    id: Partial<Record<keyof (IEntityMap & IItemMap), number>> | keyof (IEntityMap & IItemMap)
   ): Entity | Entity[] {
     if (typeof id === 'string') {
       const isItem = Object.keys(Items).includes(id);
