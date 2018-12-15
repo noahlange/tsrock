@@ -7,6 +7,7 @@ const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 export default {
   input: './src/index.ts',
   plugins: [resolve({ extensions }), typescript()],
+  external: ['minecraft-scripting-types-client', 'minecraft-scripting-types-server'],
   output: [
     {
       file: pkg.main,
