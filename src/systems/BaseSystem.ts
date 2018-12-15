@@ -21,12 +21,18 @@ class BaseSystem<S extends IEntityComponentSystem> {
   }
 
   @bind
-  public eventOn<K extends keyof IEventMap>(event: K, callback: (data: IEventMap[K]) => void) {
+  public eventOn<K extends keyof IEventMap>(
+    event: K & string,
+    callback: (data: IEventMap[K]) => void
+  ) {
     this.system.listenForEvent(event, callback);
   }
 
   @bind
-  public eventBroadcast<K extends keyof IEventMap>(event: K, ...data: Array<IEventMap[K]>) {
+  public eventBroadcast<K extends keyof IEventMap>(
+    event: K & string,
+    ...data: Array<IEventMap[K]>
+  ) {
     for (const item of data) {
       this.system.broadcastEvent(event, item);
     }

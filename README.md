@@ -1,8 +1,8 @@
 # tsrock
 
-It's TypeScript, but for people who dig up rocks, e.g., miners. An (effectively)
-zero-dependency, wildly unstable and paper thin but very sugary wrapper around the JS scripting
-API for _Minecraft: Bedrock Edition_. Could not have been made without AtomicBlom's
+It's TypeScript, but for people who dig up rocks, e.g., miners. A limited-dependency, wildly
+unstable and paper thin but very sugary wrapper around the JS scripting API for
+_Minecraft: Bedrock Edition_. Could not have been made without AtomicBlom's
 [extensive work](https://github.com/minecraft-addon-tools) in generating some initial types from
 the documentation available at the Minecraft wiki.
 

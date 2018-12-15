@@ -58,11 +58,12 @@ export default class Entity {
   }
 
   @bind
-  private addComponent<K extends keyof IComponentMap>(
+  private addComponent<T extends IComponentMap, K extends keyof T>(
     key: K & string,
-    initial?: Partial<IComponentMap[K]>
+    initial?: Partial<T[K]>
   ) {
-    const cmp = this.system.createComponent<IComponentMap[K]>(this.entity, key);
+    // create fetches if it's already been instantiated.
+    const cmp = this.system.createComponent<T[K]>(this.entity, key);
     // @ts-ignore typings for applyComponentChanges are incorrect.
     // tslint:disable-next-line
     this.system.applyComponentChanges(this.entity, Object.assign(cmp, initial));

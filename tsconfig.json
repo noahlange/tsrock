@@ -14,11 +14,5 @@
     "declaration": true,
     "strict": true
   },
-  "exclude": ["dist"],
-  "include": [
-    "src/**/*",
-    "node_modules/minecraft-scripting-types-client",
-    "node_modules/minecraft-scripting-types-server",
-    "node_modules/minecraft-scripting-types-shared"
-  ]
+  "exclude": ["dist"]
 }

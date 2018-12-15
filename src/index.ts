@@ -1,3 +1,6 @@
+import 'minecraft-scripting-types-client';
+import 'minecraft-scripting-types-server';
+
 import Blocks from './reference/blocks';
 import Components from './reference/components';
 import Entities from './reference/entities';
@@ -7,7 +10,7 @@ import Items from './reference/items';
 export interface IEntityMap extends Record<Entities, Entity> {}
 export interface IBlockMap extends Record<Blocks, Entity> {}
 export interface IItemMap extends Record<Items, Entity> {}
-interface IBuiltInComponentMap {
+export interface IBuiltInComponentMap {
   [Components.ATTACK]: IAttackComponent;
   [Components.COLLISION]: ICollisionBoxComponent;
   [Components.DAMAGE]: IDamageSensorComponent;
@@ -28,11 +31,7 @@ interface IBuiltInComponentMap {
   [Components.MOLANG]: IMoLangComponent;
 }
 
-export interface IComponentMap extends IBuiltInComponentMap {
-  [key: string]: Partial<any>;
-}
-
-export interface IEventMap {
+export interface IBuiltInEventMap {
   [Events.ENTITY_CREATED]: IEntityCreatedEventData;
   [Events.ENTITY_DEATH]: IEntityDeathEventData;
   [Events.ENTITY_RIDING_START]: IEntityStartRidingEventData;
@@ -56,6 +55,13 @@ export interface IEventMap {
   [Events.PICK_HIT_RESULT_CHANGED]: IPickHitResultChangedEvent;
   [Events.PICK_HIT_RESULT_CONTINUOUS]: IPickHitResultContinuousEvent;
   [Events.UI_EVENT]: IUIEventParameters;
+}
+
+export interface IComponentMap extends IBuiltInComponentMap {
+  [key: string]: any;
+}
+export interface IEventMap extends IBuiltInEventMap {
+  [key: string]: any;
 }
 
 import Client from './systems/ClientSystem';

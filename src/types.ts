@@ -1,6 +1,4 @@
 // tslint:disable: max-classes-per-file
-import { IEventMap } from './';
-
 export interface IEntityComponentSystem extends ISystem<any> {
   createComponent<T>(entity: IEntityObject, componentName: string): T;
   hasComponent<T>(entity: IEntityObject, componentName: string): T;
@@ -12,10 +10,6 @@ export interface IEntityComponentSystem extends ISystem<any> {
 }
 
 export type Handler = (...args: any[]) => any;
-
-export type TypedMethod<E extends keyof IEventMap> = IEventMap[E] extends never
-  ? () => void
-  : (data: IEventMap[E]) => void;
 
 declare global {
   // tslint:disable-next-line: no-empty-interface
