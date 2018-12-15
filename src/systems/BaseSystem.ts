@@ -2,7 +2,7 @@ import { IComponentMap, IEventMap } from '../';
 import { bind, EVENT_BRAND } from '../decorators';
 import Entity from '../Entity';
 import { IEntityComponentSystem } from '../types';
-import { getInstanceMethodNames, isEventHandler } from '../utils';
+import { getInstanceMethodNames, isEventHandler, keys } from '../utils';
 
 class BaseSystem<S extends IEntityComponentSystem> {
   protected system: S;
@@ -35,6 +35,17 @@ class BaseSystem<S extends IEntityComponentSystem> {
   ) {
     for (const item of data) {
       this.system.broadcastEvent(event, item);
+    }
+  }
+
+  @bind
+  public registerComponents<K extends keyof IComponentMap>(
+    components: { [P in K]: Partial<IComponentMap[P]> }
+  ): void {
+    for (const id of keys(components)) {
+      if (typeof id === 'string') {
+        this.registerComponent(id, components[id]);
+      }
     }
   }
 

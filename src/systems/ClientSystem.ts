@@ -17,6 +17,7 @@ class ClientSystem {
 
   public register = {
     component: this.base.registerComponent,
+    components: this.base.registerComponents,
     query: this.base.registerQuery
   };
 
